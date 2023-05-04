@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">Carga.uy Mobile</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="Descripcion_General">La aplicación carga.uy cuenta con un componente central y un componente móvil, e interactúa con nodos periféricos y sistemas externos. Estos elementos permiten brindar funcionalidades a los siguientes tipos de usuarios: ciudadanos(pertenecientes a las empresas de carga), funcionarios, autoridades, administradores y público en general.</string>
+</resources>
