@@ -21,6 +21,26 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- PARA LA PARTE QUE REALIZA EL LOGIN WEB
+        <activity
+            android:name="WebLoginActivity" -Clase a agregar a com.example.cargauymobile
+            tools:node="replace">
+            <intent-filter>
+                <action android: name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSEABLE"/>
+
+                <data
+                    android:host="openidconnect.net"
+                    android:path="/callback"
+                    android:scheme="https" />
+            </intent-filter>
+        </activity>
+        -->
+
+
     </application>
 
 </manifest>
