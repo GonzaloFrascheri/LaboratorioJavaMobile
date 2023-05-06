@@ -14,7 +14,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     /**
-     * Empieza el LoginWeb - Ejemplo profesor Fererico, clase Android 2022
+     * Empieza el LoginWeb - Ejemplo profesor Federico, clase Android 2022
      *
      * public void LoginWeb(View v){
      *     String url = "";
