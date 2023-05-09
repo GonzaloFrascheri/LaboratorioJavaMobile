@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".WebLoginActivity">
+
+    <TextView
+        android:id="@+id/Resultado"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_marginStart="48dp"
+        android:layout_marginTop="36dp"
+        android:text="Resultado"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <TextView
+        android:id="@+id/RedirectUri"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_marginStart="48dp"
+        android:layout_marginTop="36dp"
+        android:text="RedirectUri"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/Resultado" />
+
+    <TextView
+        android:id="@+id/Code"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_marginStart="48dp"
+        android:layout_marginTop="36dp"
+        android:text="Code"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/RedirectUri" />
+
+    <TextView
+        android:id="@+id/State"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="48dp"
+        android:layout_marginTop="36dp"
+        android:text="State"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/Code" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
