@@ -1,7 +1,5 @@
 package com.example.cargauymobile;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.net.Uri;
@@ -12,6 +10,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.android.volley.AuthFailureError;
@@ -25,12 +25,21 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
-
+import com.google.firebase.crashlytics.buildtools.reloc.org.apache.http.HttpResponse;
+import com.google.firebase.crashlytics.buildtools.reloc.org.apache.http.NameValuePair;
+import com.google.firebase.crashlytics.buildtools.reloc.org.apache.http.client.ClientProtocolException;
+import com.google.firebase.crashlytics.buildtools.reloc.org.apache.http.client.HttpClient;
+import com.google.firebase.crashlytics.buildtools.reloc.org.apache.http.client.entity.UrlEncodedFormEntity;
+import com.google.firebase.crashlytics.buildtools.reloc.org.apache.http.client.methods.HttpPost;
+import com.google.firebase.crashlytics.buildtools.reloc.org.apache.http.impl.client.HttpClientBuilder;
+import com.google.firebase.crashlytics.buildtools.reloc.org.apache.http.message.BasicNameValuePair;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.CookieHandler;
 import java.net.CookieManager;
@@ -39,11 +48,11 @@ import java.net.URL;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
-
-
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
@@ -83,11 +92,12 @@ public class MainActivity extends AppCompatActivity {
 /******************************************************************/
     //INGRESAR SU CLIENT_SECRET Y CLIENT ID AQUI
 // /******************************************************************/
-    String client_id = "";
+    String client_id = "890192";
     String client_secret ="";
-    String redirect_uri ="https://openidconnect.net/callback";
-    Uri uredirect_uri =Uri.parse("https://openidconnect.net/callback");
-    String last_state ="" ;
+    String redirect_uri ="http://localhost:8080";
+    Uri uredirect_uri =Uri.parse("http://localhost:8080");
+
+    String last_state ="asdf934087";
     CookieManager manager;
     int RC_AUTH = 0;
     public static final String ACCESS_TOKEN_MESSAGE = "com.example.cargauymobile.ACCESS_TOKEN_MESSAGE";
@@ -585,16 +595,73 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    public String doGetRequest() throws IOException {
+        String uri = "https://auth-testing.iduruguay.gub.uy/oidc/v1/authorize?";
+        String query = "response_type=code&scope=openid%20personal%20email";
+        String statequery= "&state=asdf";
+        String client = "&client_id=890192";
+        //String redirect = "&redirect_uri="+ URLEncoder.encode("http://localhost:8080", StandardCharsets.UTF_8);
+        String redirect = "http://localhost:8080";
+        Uri uri1 = Uri.parse(redirect);
 
-      //Empieza el LoginWeb - Ejemplo profesor Federico, clase Android 2022
+
+        URL url = new URL(uri+query+statequery+client+redirect);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("GET");
+        conn.setRequestProperty("Content-Type", "application/json");
+
+        if (conn.getResponseCode() != 200) {
+            throw new RuntimeException("Failed : HTTP error code : " + conn.getResponseCode());
+        }
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+        StringBuilder output = new StringBuilder();
+        String line;
+        while ((line = br.readLine()) != null) {
+            output.append(line);
+        }
+
+        conn.disconnect();
+
+        return output.toString();
+    }
+
+
+
+    public void post(String code) {
+
+        HttpClient httpclient = HttpClientBuilder.create().build();
+        HttpPost httppost = new HttpPost("https://auth-testing.iduruguay.gub.uy/oidc/v1/token");
+
+        try {
+            //Añade las variables a enviar por post
+            List<NameValuePair> postValues = new ArrayList<NameValuePair>(2);
+            postValues.add(new BasicNameValuePair("grant_type","authorization_code"));
+            postValues.add(new BasicNameValuePair("code",code));
+            postValues.add(new BasicNameValuePair("redirect_uri","http://localhost:8080"));
+            postValues.add(new BasicNameValuePair("client_id","890192"));
+            postValues.add(new BasicNameValuePair("client_secret","457d52f181bf11804a3365b49ae4d29a2e03bbabe74997a2f510b179"));
+
+            httppost.setEntity(new UrlEncodedFormEntity(postValues));
+
+            //Hace la petición
+            HttpResponse httpResponse = httpclient.execute(httppost);
+        }
+        catch (ClientProtocolException e) {
+            //TODO Auto-generated catch block
+        }
+        catch (IOException e) {
+            //TODO Auto-generated catch block
+        }
+    }
 
     public void LoginWeb (View v){
-        String url = "https://auth-testing.iduruguay.gub.uy/oidc/v1/authorize?response_type=code&scope=openid%20personal%20email&client_id=890192&state=asdf934087&redirect_uri=https%3A%2F%2Fopenidconnect.net%2Fcallback";
+        String redirect = "http://localhost:8080";
+        Uri uri1 = Uri.parse(redirect);
+
+        String url = "https://auth-testing.iduruguay.gub.uy/oidc/v1/authorize?response_type=code&scope=openid%20personal%20email&client_id=890192&state=asdf934087&redirect_uri="+uri1;
         Intent i = new Intent(Intent.ACTION_VIEW);
         i.setData(Uri.parse(url));
         startActivity(i);
     }
-
-
 }
-

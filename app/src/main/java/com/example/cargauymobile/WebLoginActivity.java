@@ -9,7 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class WebLoginActivity extends AppCompatActivity {
 
-    String callback_uri = "";
+    String callback_uri = "https://localhost:8080/callback";
 
     String code = "";
 

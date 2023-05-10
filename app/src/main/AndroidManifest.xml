@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.INTERNET"/>
+
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -10,10 +13,32 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.CargauyMobile"
+        android:theme="@style/AppTheme.NoActionBar"
         tools:targetApi="31">
         <activity
+            android:name=".ResultadoActivity"
+            android:exported="false"/>
+        <activity
+            android:name=".WebLoginActivity"
+            tools:node="replace"
+            android:exported="true"
+            tools:ignore="AppLinkUrlError">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSEABLE"/>
+
+                <data
+                    android:host="localhost:8080"
+                    android:path="/callback"
+                    android:scheme="https" />
+            </intent-filter>
+        </activity>
+        <activity
             android:name=".MainActivity"
+            android:label="idUruguay"
+            android:theme="@style/AppTheme.NoActionBar"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -21,26 +46,5 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <!-- PARA LA PARTE QUE REALIZA EL LOGIN WEB
-        <activity
-            android:name="WebLoginActivity" -Clase a agregar a com.example.cargauymobile
-            tools:node="replace">
-            <intent-filter>
-                <action android: name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.BROWSEABLE"/>
-
-                <data
-                    android:host="openidconnect.net"
-                    android:path="/callback"
-                    android:scheme="https" />
-            </intent-filter>
-        </activity>
-        -->
-
-
     </application>
-
 </manifest>
