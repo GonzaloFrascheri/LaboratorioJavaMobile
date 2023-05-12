@@ -2,6 +2,7 @@ package com.example.cargauymobile;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.net.ParseException;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,6 +11,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import com.nimbusds.jwt.SignedJWT;
+import com.nimbusds.jwt.JWTClaimsSet;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -33,6 +42,12 @@ import com.google.firebase.crashlytics.buildtools.reloc.org.apache.http.client.e
 import com.google.firebase.crashlytics.buildtools.reloc.org.apache.http.client.methods.HttpPost;
 import com.google.firebase.crashlytics.buildtools.reloc.org.apache.http.impl.client.HttpClientBuilder;
 import com.google.firebase.crashlytics.buildtools.reloc.org.apache.http.message.BasicNameValuePair;
+
+import okhttp3.OkHttpClient;
+import java.io.IOException;
+import org.json.JSONException;
+import org.json.JSONObject;
+import okhttp3.OkHttpClient;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -104,6 +119,8 @@ public class MainActivity extends AppCompatActivity {
     public static final String REFRESH_TOKEN_MESSAGE = "com.example.cargauymobile.REFRESH_TOKEN_MESSAGE";
     public static final String ID_TOKEN_MESSAGE = "com.example.cargauymobile.ID_TOKEN_MESSAGE";
 
+    private static final String JWT_URL = "10.0.2.2:8080/?code=asf";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -121,11 +138,49 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        textView = (TextView) findViewById(R.id.text);
+        textView = (TextView) findViewById(R.id.idTokenTextView);
         handleSSLHandshake();
         manager = new CookieManager();
         CookieHandler.setDefault( manager  );
+
+        //////
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    String jwtToken = getTokenFromUrl(JWT_URL);
+
+                    SignedJWT signedJWT = SignedJWT.parse(jwtToken);
+                    JWTClaimsSet claims = signedJWT.getJWTClaimsSet();
+                    String username = claims.getStringClaim("username");
+                    long expirationTime = claims.getExpirationTime().getTime();
+
+                    Log.d("MainActivity", "Username: " + username);
+                    Log.d("MainActivity", "Expiration Time: " + expirationTime);
+                } catch (ParseException | IOException | java.text.ParseException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
+
+    private String getTokenFromUrl(String urlString) throws IOException {
+        URL url = new URL(urlString);
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod("GET");
+
+        BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+        StringBuilder response = new StringBuilder();
+        String line;
+        while ((line = reader.readLine()) != null) {
+            response.append(line);
+        }
+        reader.close();
+
+        return response.toString();
+    }
+
 
 
     @Override
@@ -655,13 +710,88 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
+    public void getJwtToken() {
+        String url = "http://10.0.2.2:8080/backoffice/";
+
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            JSONObject jsonObject = new JSONObject(response);
+                            String jwtToken = jsonObject.getString("token");
+                            // Usa el token como necesites aquí
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+            }
+        });
+
+        //Volley.newRequestQueue(context).add(stringRequest);
+    }
+
     public void LoginWeb (View v){
         String redirect = "http://localhost:8080";
         Uri uri1 = Uri.parse(redirect);
+
+        //String url2 = "10.0.2.2:8080/?code=asf";
+        //capturar los datos de aca, y volver a mi aplicacion - TODO
 
         String url = "https://auth-testing.iduruguay.gub.uy/oidc/v1/authorize?response_type=code&scope=openid%20personal%20email&client_id=890192&state=asdf934087&redirect_uri="+uri1;
         Intent i = new Intent(Intent.ACTION_VIEW);
         i.setData(Uri.parse(url));
         startActivity(i);
+
     }
+
+    //http://10.0.2.2:8080/backoffice/ --> Desde el emulador me anda, pero necesito acceder desde el emulador a localhost
+
+
+
+    //Ejemplo sin andar de obtencion y validacion de token
+    /*
+    * String jwtToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
+
+        try {
+            SignedJWT signedJWT = SignedJWT.parse(jwtToken);
+            JWTClaimsSet claims = signedJWT.getJWTClaimsSet();
+            String username = claims.getSubject();
+            long expirationTime = claims.getExpirationTime().getTime();
+
+            Log.d("MainActivity", "Username: " + username);
+            Log.d("MainActivity", "Expiration Time: " + expirationTime);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+    }
+    * */
+
+/*
+    public String getAuthenticationFromToken(final String jwt) throws ParseException, JOSEException {
+        if (!configuration.isKnoxEnabled()) {
+            throw new IllegalStateException("Apache Knox SSO is not enabled.");
+        }
+        // attempt to parse the signed jwt
+        final SignedJWT signedJwt = SignedJWT.parse(jwt);
+        // validate the token
+        if (validateToken(signedJwt)) {
+            final JWTClaimsSet claimsSet = signedJwt.getJWTClaimsSet();
+            if (claimsSet == null) {
+                logger.info("Claims set is missing from Knox JWT.");
+                throw new InvalidAuthenticationException("The Knox JWT token is not valid.");
+            }
+            // extract the user identity from the token
+            return claimsSet.getSubject();
+        } else {
+            throw new InvalidAuthenticationException("The Knox JWT token is not valid.");
+        }
+    }
+*/
+
 }

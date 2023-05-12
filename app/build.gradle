@@ -39,6 +39,8 @@ dependencies {
     implementation 'com.google.android.material:material:1.0.0'
     implementation 'com.google.code.gson:gson:2.8.6'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'com.squareup.okhttp3:okhttp:4.9.3'
+    implementation 'com.nimbusds:nimbus-jose-jwt:9.12'
     implementation 'androidx.coordinatorlayout:coordinatorlayout:1.1.0'
     implementation 'com.android.volley:volley:1.2.1'
     implementation 'com.google.firebase:firebase-crashlytics-buildtools:2.8.1'
